@@ -15,8 +15,45 @@
 		<link href='http://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		<script>
-			$(function(){
-			});
+			/*$(function(){
+				$("#search").focus(function(){
+					$("#search").val("");
+					$(".boxes").show();
+					$(".boxesNew").hide();
+				});
+				$("#search").focusout(function(){
+					$("#search").val("Search...");
+					$(".boxes").show();
+					$(".boxesNew").hide();
+				});
+			
+				$("#search").keyup(function(e){
+					$(".boxes").hide();
+					$(".boxesNew").show();
+					$(".boxesNew").html("");
+					var input = $(this).val();
+					$.ajax({
+						type:"POST",
+						url:"searchAlien.php",
+						data: {input: input},
+						success: function(html){
+							if(html){
+								$.each(html, function(i, item){
+									$(".boxesNew").append('<div class="box registered"><ul>'+item+'</ul></div>');
+								});
+								
+							}else{
+								alert("error");
+							}
+						}
+					});
+					
+					if(e.keyCode == 27 || $("#search").val() == ""){
+						$(".boxes").show();
+						$(".boxesNew").hide();
+					}
+				});
+			});*/
 		</script>
 		<style type="text/css">
 			*{margin: 0;padding: 0;}
@@ -33,6 +70,7 @@
 			}
 			
 			.display{
+				height: 100%;
 				width: 100%;
 				min-height: 100%;
 				display: block;
@@ -91,7 +129,6 @@
 				display: block;
 				right: 0;
 				position: absolute;
-				margin-bottom: 100px;
 				z-index: 2;
 				padding-top: 10px;
 			}
@@ -129,22 +166,26 @@
 				background-color: #f00c0c;
 			}
 			
-			.main{
-				height: 400px;
-				width: 800px;
+			.search{
+				width: inherit;
+				height: 60px;
 				margin: 0 auto;
-				margin-top: 100px;
-			}
-			.main h1{
-
+				display: block;
+				background-color: aqua;
 			}
 			
-			.main p{
-				padding-top:20px;
+			.search input{
+				height: 60px;
+				width: 100%;
+				border: 0;
+				outline: none;
+				font-size: 3em;
+				letter-spacing: 5px;
+				color: #fff;
+				background-color: #000;
+				padding-left: 20px;
 			}
 			
-			span#reg{width: 40px; height: 20px; display: inline-block; background-color: #f00c0c; margin-left: 5px; margin-right: 5px;}
-			span#unreg{width: 40px; height: 20px; display: inline-block; background-color: #2f2f2f; margin-left: 5px; margin-right: 5px;}
 			
 
 		</style>
@@ -158,36 +199,30 @@
 				<?php
 				echo('<a href="agentInfo.php">'.$_SESSION['user'].'<p>Agent information panel</p></a>');
 			?>
-				<a href="#">Home</a>
+				<a href="index.php">Home</a>
 				<a href="aliens.php">Aliens<p>Get information about each alien registered</p></a>
 				<a href="races.php">Races<p>Information on all races discovered</p></a>
 				<a href="agents.php">Agents<p>Get information about every agent working at the agency</p></a>
-				<a href="campaigns.php">Campaigns<p>Information about every campaign at the agency</p></a>
+				<a href="#">Campaigns<p>Information about every campaign at the agency</p></a>
 				<a href="reports.php">Reports<p>All reports that have been created</p></a>
 				<a href="logout.php">Log out</a>
 			</nav>
 		</div>
-			<div class="wrapper">
-				<div class="main">
-					<?php 
-						echo("<h1>Welcome Agent ".$_SESSION['user']."</h1>");
-					?>
-					<h2>Select one of the categories on the left hand side</h2>
-					<p>Information:</p>
-					<p>Aliens: Registered and Unregistered aliens are shown in the list along with their information, Unregistered are marked with <span id="reg"></span> and Registered are marked with <span id="unreg"></span></p>
-					<p>To search for specific alien, use the search box at the top on the alien sub-site, this searches for a name of an alien and only works now on registered aliens</p>
-					<p>Races:</p>
-					<p>Information on all races an be found under the race tab</p>
-					<p>Agent:</p>
-					<p>List of all agents working at the agency can be found in the agents tab to the left</p>
-					<p>Information about the current logged in agent can be found by clicking on the username</p>
-					<p>Information about agents is only accessible by top management!</p>
-					<p>Campaign:</p>
-					<p>Information about all campaigns that have been started at the agency can be found there</p>
-					<p>Report:</p>
-					<p>Information about all the reports created can be found under that tab</p>
-				</div>
+		<div class="wrapper">
+			<div class="boxes">
+		<?php
+			include 'connector.php';
+			try{
+				$a = new Connection();
+				$a->getCampaigns();
+			}catch(PDOException $e){
+				echo ($e->getMessage());
+			}
+			
+		?>
 			</div>
+			<div class="boxesNew"></div>
+		</div>
 		</div>
 	</body>
 </html>

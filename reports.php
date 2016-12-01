@@ -1,18 +1,21 @@
+<?php
+	session_start();
+	if(isset($_SESSION['pass'])){
+		
+	}else if(!isset($_SESSION['pass'])){
+		header("Refresh: 0; url=error.php");
+		exit();
+	}
+?>
 <!DOCTYPE html>
 <html>
 	<head>
 		<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:400,700' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Poiret+One' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		<script>
 			$(function(){
-				$(".box").on('click',function(){
-					$(".box").hide();
-					$(this).addClass('bigBox');
-					$(this).show();
-				});
-				$(".bigBox:hover").on('click',function(){
-					$(this).hide();
-					});
 			});
 		</script>
 		<style type="text/css">
@@ -24,7 +27,9 @@
 			body{
 				width: 100%;
 				background-color: #cdcdcd;
-				font-family: 'Source Code Pro' ;
+				/*font-family: 'Source Code Pro' ;
+				font-family: 'Poiret One', cursive;*/
+				font-family: 'Audiowide', cursive;
 			}
 			
 			.display{
@@ -36,8 +41,9 @@
 			}
 			
 			.menu{
+				font-family: 'Poiret One', cursive;
 				min-height: 100%;
-				width: 250px;
+				width: 200px;
 				background-color: #333333;
 				float: left;
 				color: #fff;
@@ -51,7 +57,7 @@
 			nav a{
 				text-decoration: none;
 				color: #fff;
-				width: 235px;
+				width: 185px;
 				font-weight: 300;
 				font-size: 1.5em;
 				text-transform: uppercase;
@@ -62,9 +68,7 @@
 				padding-bottom: 15px;
 			}
 			nav a:hover{
-				background-color: #fff;
-				color: #000;
-				font-size: 1.7em;
+				background-color:#595959;
 			}
 			nav a p{
 				display: none; 
@@ -80,12 +84,11 @@
 				width: 100%;
 				height: auto;
 				display: block;
-				margin: 0 auto;
 			}
 			.wrapper{
-				background-color: #a4a4a4;
+				background-color: #cdcdcd;
 				min-height: 100%;
-				width: calc(100% - 250px);
+				width: calc(100% - 280px);
 				display: block;
 				right: 0;
 				position: absolute;
@@ -94,27 +97,36 @@
 			}
 			
 			.box{
-				height: 200px;
-				width: calc(20% - 30px);
-				margin-top: 6px;
-				margin-left: 10px;
-				margin-right: 10px;
-				margin-bottom: 6px;
+				margin: 10px;
+				padding: 10px;
 				display: inline-block;
-				background-color: orange;
+				background-color: #2f2f2f;
+				color: #fff;
 			}
 			.box:hover{
-				padding: 3px 5px 3px 5px;
-				margin: 3px 5px 3px 5px;
 				background-color: indianred;
 			}
 			
-			.bigBox,.bigBox:hover{
-				display: block !important;
-				height: 800px;
-				width: 800px;
-				margin: 0 auto;
-				margin-top: 5%;
+			.box ul{
+				
+			}
+			
+			.box li{
+				text-align: center;
+				font-weight: 700;
+				margin-top: 5px;
+				list-style: none;
+			}
+			.box li:first-child{
+				font-size: 1.5em;
+			}
+			.registered li:nth-child(2){
+				font-size: 1em;
+				margin-bottom: 20px;
+			}
+			
+			.unregistered{
+				background-color: #f00c0c;
 			}
 			
 			#close{
@@ -126,6 +138,8 @@
 				left: 0;
 				background-color: blue;
 			}
+			
+			
 
 		</style>
 	</head>
@@ -133,23 +147,32 @@
 		<div class="display">
 		<div class="menu">
 			<img src="images/logo.png" />
+			
 			<nav>
-				<a href="">Home</a>
-				<a href="">Aliens<p>Get information about each alien registered</p></a>
-				<a href="">Agents<p>Get information about every agent working at the agency</p></a>
-				<a href="">Planets<p>Information about every planet</p></a>
+				<?php
+				echo('<a href="agentInfo.php">'.$_SESSION['user'].'<p>Agent information panel</p></a>');
+			?>
+				<a href="index.php">Home</a>
+				<a href="aliens.php">Aliens<p>Get information about each alien registered</p></a>
+				<a href="races.php">Races<p>Information on all races discovered</p></a>
+				<a href="agents.php">Agents<p>Get information about every agent working at the agency</p></a>
+				<a href="campaigns.php">Campaigns<p>Information about every campaign at the agency</p></a>
+				<a href="#">Reports<p>All reports that have been created</p></a>
+				<a href="logout.php">Log out</a>
 			</nav>
 		</div>
 		<div class="wrapper">
 		<?php
 			include 'connector.php';
-			
-			$stm = $dbConn->prepare("SELECT * name,DESC FROM aliens");
-			$stm->execute();
-			
-			foreach($stm as $row){
-				echo('<div class="box"><h1>'.$row[0]'</h1><p>'.$row[1].'</p></div>');
+			try{
+				$a = new Connection('127.0.0.1','IS324GH14_Assignment_1','root','');
+				$a->getReports();
+			}catch(PDOException $e){
+				echo ($e->getMessage());
 			}
+			
+			
+			
 		?>
 		</div>
 		</div>
